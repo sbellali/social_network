@@ -6,5 +6,4 @@ RUN npm install
 
 FROM base as developement
 CMD [ "npm", "run", "start" ]
-# EXPOSE 4200
 

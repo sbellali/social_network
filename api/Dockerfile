@@ -6,9 +6,8 @@ RUN npm install
 
 FROM base as developement
 CMD [ "npm", "run", "start:dev" ]
-EXPOSE 3001
+
 
 FROM base as production
 CMD [ "node", "dist/main.js" ]
 COPY . .
-EXPOSE 3001
