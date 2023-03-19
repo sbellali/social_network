@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+
+  ui:
+    image: ui:dev
+    build:
+      context: ./ui
+      target: developement
+    volumes:
+      - ./ui:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${UI_PORT}:4200
+
+  api:
+    image: api:dev
+    build:
+      context: ./api
+      target: developement
+    volumes:
+      - ./api:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${API_PORT}:3001
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./.mongo/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:${MONGO_PORT}/
