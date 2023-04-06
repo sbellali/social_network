@@ -8,7 +8,7 @@ services:
       target: developement
     volumes:
       - ./ui:/usr/src/app
-      - /usr/src/app/node_modules
+      - ui_node_modules:/usr/src/app/node_modules
     environment:
       - EXPOSED_PORT=${UI_EXPOSED_PORT}
     ports:
@@ -21,7 +21,7 @@ services:
       target: developement
     volumes:
       - ./api:/usr/src/app
-      - /usr/src/app/node_modules
+      - api_node_modules:/usr/src/app/node_modules
     environment:
       - EXPOSED_PORT=${API_EXPOSED_PORT}
     ports:
@@ -45,3 +45,17 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:${MONGO_PORT}/
+
+volumes:
+  api_node_modules:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/api/node_modules
+  ui_node_modules:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/ui/node_modules
