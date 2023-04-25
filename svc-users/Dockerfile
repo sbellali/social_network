@@ -13,11 +13,13 @@ RUN apt-get update \
     libicu-dev \
     libzip-dev \
     && docker-php-ext-install \
-    pdo_mysql \
+    mysqli pdo_mysql \
     intl \
     zip \
     && pecl install xdebug-3.2.1 \
     && docker-php-ext-enable xdebug
+
+ARG DATABASE_URL
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

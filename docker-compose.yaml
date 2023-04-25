@@ -25,6 +25,13 @@ services:
     image: svc-users:dev
     build:
       context: ./svc-users
+      args:
+        - DATABASE_URL="pdo-mysql://${MYSQL_USER_SVC_USER}:${MYSQL_PASSWORD_SVC_USER}@${MYSQL_HOST}:${MYSQL_PORT}/${DB_SVC_USER}?serverVersion=8.0"
+    environment:
+      - DATABASE_URL="pdo-mysql://${MYSQL_USER_SVC_USER}:${MYSQL_PASSWORD_SVC_USER}@${MYSQL_HOST}:${MYSQL_PORT}/${DB_SVC_USER}?serverVersion=8.0"
+    volumes:
+      - ./svc-users:/var/www/html
+      - svc_users_vendor:/var/www/html/vendor
     ports:
       - ${SVC_USERS_HOST_PORT}:${SVC_USERS_EXPOSED_PORT}
 
@@ -107,3 +114,9 @@ volumes:
       type: none
       o: bind
       device: ${PWD}/svc-posts/node_modules
+  svc_users_vendor:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/svc-users/vendor
