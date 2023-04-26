@@ -1,0 +1,1 @@
+CREATE USER 'user_db_user'@'%' IDENTIFIED BY 'password';
