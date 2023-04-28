@@ -5,7 +5,7 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
 
-class UserCreateDTO extends AbstractDTO
+class UserModifyDTO
 {
     #[Assert\NotBlank]
     #[Assert\Email(
@@ -16,8 +16,6 @@ class UserCreateDTO extends AbstractDTO
     #[Assert\NotBlank]
     private ?string $username = null;
 
-    #[Assert\NotBlank]
-    private ?string $password = null;
 
     public function getEmail(): ?string
     {
@@ -43,29 +41,16 @@ class UserCreateDTO extends AbstractDTO
         return $this;
     }
 
-    public function getPassword(): string
+
+    public function fill(User $user)
     {
-        return $this->password;
+        $user->setEmail($this->getEmail());
+        $user->setUsername($this->getUsername());
     }
 
-    public function setPassword(string $password): self
+    public function extract(User $user)
     {
-        $this->password = $password;
-
-        return $this;
+        $this->setEmail($user->getEmail());
+        $this->setUsername($user->getUsername());
     }
-
-    // public function fill(User $user)
-    // {
-    //     $user->setEmail($this->getEmail());
-    //     $user->setUsername($this->getUsername());
-    //     $user->setPassword($this->getPassword());
-    // }
-
-    // public function extract(User $user)
-    // {
-    //     $this->setEmail($user->getEmail());
-    //     $this->setUsername($user->getUsername());
-    //     $this->setPassword($user->getPassword());
-    // }
 }

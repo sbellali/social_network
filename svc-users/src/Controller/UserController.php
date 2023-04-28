@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\DTO\UserCreateDTO;
-use App\Entity\UserCreateDTO as EntityUserCreateDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -26,9 +25,8 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
         ValidatorInterface $validator
-    ): JsonResponse
-    {
-        $userCreateDTO =  $serializer->deserialize($request->getContent(), EntityUserCreateDTO::class, 'json');
+    ): JsonResponse {
+        $userCreateDTO =  $serializer->deserialize($request->getContent(), UserCreateDTO::class, 'json');
         $errors = $validator->validate($userCreateDTO);
         if (count($errors) > 0) {
             throw new Exception((string) $errors);
@@ -43,5 +41,15 @@ class UserController extends AbstractController
         $serializedUser = $serializer->normalize($user, 'array');
 
         return new JsonResponse(['user' => $serializedUser, 'token' => $token], 201);
+    }
+
+    #[Route('/user/{id}', name: 'updateUser', methods: ['PUT'])]
+    public function modifyUser(Request $request, SerializerInterface $serializer, ValidatorInterface $validator)
+    {
+        $userCreateDTO =  $serializer->deserialize($request->getContent(), UserCreateDTO::class, 'json');
+        $errors = $validator->validate($userCreateDTO);
+        if (count($errors) > 0) {
+            throw new Exception((string) $errors);
+        }
     }
 }
