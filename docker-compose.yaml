@@ -53,6 +53,8 @@ services:
       - svc_users_vendor:/var/www/html/vendor
     ports:
       - ${SVC_USERS_HOST_PORT}:${SVC_USERS_EXPOSED_PORT}
+    links:
+      - mysql
 
   svc-groups:
     image: svc-groups:dev

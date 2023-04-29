@@ -105,7 +105,7 @@ function make-migration() {
 }
 
 function dcu() {
-    docker-compose down --volumes --remove-orphans --force
+    docker-compose down --volumes --remove-orphans
     docker volume prune -f
     docker-compose up -d
 }
