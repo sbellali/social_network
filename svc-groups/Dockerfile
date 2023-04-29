@@ -3,7 +3,9 @@ FROM php:8.1-fpm
 
 # Set working directory
 WORKDIR /var/www/html
-RUN pear config-set http_proxy ${http_proxy}
+
+RUN if [ ! -z "$http_proxy" ]; then pear config-set http_proxy ${http_proxy};fi
+
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y \
