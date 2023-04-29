@@ -74,7 +74,6 @@ while true; do
   esac
 done
 
-echo "$BUILD;$MAKEDIR;$CREATE_DB;$MAKE_MIGRATION;"
 
 function build() {
     yellowText "Building docker images ..."
@@ -110,8 +109,17 @@ function dcu() {
     docker-compose up -d
 }
 
+function create-jwt {
+    yellowText "Generating keypair for JWT ... "
+    if [ ! -e "svc-users/config/jwt/private.pem" ] || [ ! -e "svc-users/config/jwt/private.pem" ]
+    then
+        docker-compose exec $SVC_USER_SF_CLI lexik:jwt:generate-keypair
+    fi
+}
+
 ${BUILD}
 ${MAKEDIR}
 dcu
+create-jwt
 ${CREATE_DB}
 ${MAKE_MIGRATION}
