@@ -4,6 +4,8 @@ FROM php:8.1-fpm
 # Set working directory
 WORKDIR /var/www/html
 
+RUN if [ ! -z "$http_proxy" ]; then pear config-set http_proxy ${http_proxy};fi
+
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y \
@@ -13,11 +15,13 @@ RUN apt-get update \
     libicu-dev \
     libzip-dev \
     && docker-php-ext-install \
-    pdo_mysql \
+    mysqli pdo_mysql \
     intl \
     zip \
     && pecl install xdebug-3.2.1 \
     && docker-php-ext-enable xdebug
+
+ARG DATABASE_URL
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

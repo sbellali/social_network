@@ -1,0 +1,125 @@
+#!/bin/bash
+if ! which docker-compose >/dev/null; then
+    echo "docker-compose is not available on this system." >&2
+    exit 1
+fi
+
+if ! which docker >/dev/null; then
+    echo "docker is not available on this system." >&2
+    exit 1
+fi
+OPTIONS=bh
+LONGOPTS=build,makedir,help,createdb,make-migration,init
+declare {BUILD,MAKEDIR,CREATE_DB,MAKE_MIGRATION}=''
+SVC_USER_SF_CLI='svc-users php bin/console  -n'
+
+PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
+if [[ $? -ne 0 ]]; then
+  exit 1
+fi
+
+function help() {
+    echo "usage : $0 [--build|--makedir|--createdb|--make-migration|--init]"
+    echo "  --build  Build docker images"
+    echo "  --makedir  Create directories for docker volumes"
+    echo "  --createdb  Create datatables"
+    echo "  --make-migration  Create db migration"
+    echo "  --init  do all the actions necessary for the initial launch of the application"
+    exit 0
+}
+
+function yellowText()
+{
+    echo -e "\e[1;33m${1}\e[0m"
+}
+# Lecture des options en entrée
+eval set -- "$PARSED"
+while true; do
+  case "$1" in
+    -h|--help)
+        help
+        shift
+        ;;
+    --build)
+        BUILD='build'
+        shift
+        ;;
+    --makedir)
+        MAKEDIR='makedir'
+        shift
+        ;;
+    --createdb)
+        CREATE_DB='createdb'
+        shift
+        ;;
+    --make-migration)
+        MAKE_MIGRATION='make-migration'
+        shift
+        ;;
+    --init)
+        BUILD='build'
+        MAKEDIR='makedir'
+        CREATE_DB='createdb'
+        MAKE_MIGRATION='make-migration'
+        shift
+        ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      echo "Option invalide : $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+
+function build() {
+    yellowText "Building docker images ..."
+    docker-compose build
+}
+
+function makedir() {
+    local paths=("ui/node_modules" "svc-posts/node_modules" "svc-users/vendor")
+
+    # loop through the array and print each element
+    yellowText "making directories ..."
+    for path in "${paths[@]}"
+    do
+        mkdir -p ${PWD}/${path}
+        echo -e "making ${PWD}/${path} \e[32m done \e[0m"
+    done
+}
+
+
+function createdb() {
+    yellowText "Creating databases ..."
+    docker-compose exec $SVC_USER_SF_CLI doctrine:database:create
+}
+
+function make-migration() {
+    yellowText "Making migration ... "
+    docker-compose exec $SVC_USER_SF_CLI doctrine:migrations:migrate
+}
+
+function dcu() {
+    docker-compose down --volumes --remove-orphans
+    docker volume prune -f
+    docker-compose up -d
+}
+
+function create-jwt {
+    yellowText "Generating keypair for JWT ... "
+    if [ ! -e "svc-users/config/jwt/private.pem" ] || [ ! -e "svc-users/config/jwt/private.pem" ]
+    then
+        docker-compose exec $SVC_USER_SF_CLI lexik:jwt:generate-keypair
+    fi
+}
+
+${BUILD}
+${MAKEDIR}
+dcu
+create-jwt
+${CREATE_DB}
+${MAKE_MIGRATION}
