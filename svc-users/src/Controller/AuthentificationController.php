@@ -15,16 +15,18 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface as Passw
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends AbstractController
+class AuthentificationController extends AbstractController
 {
     function __construct(
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer,
-        private ValidatorInterface $validator
-    ) {}
+        private ValidatorInterface $validator,
+        private JWTManager $jwtManager
+    ) {
+    }
 
-    #[Route('/register', name: 'register', methods: ['POST'])]
-    public function register(Request $request, PasswordHasher $passwordHasher, JWTManager $jwtManager): JsonResponse 
+    #[Route('/api/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request, PasswordHasher $passwordHasher): JsonResponse
     {
         $userCreateDTO =  $this->serializer->deserialize($request->getContent(), UserCreateDTO::class, 'json');
         $errors = $this->validator->validate($userCreateDTO);
@@ -37,22 +39,9 @@ class UserController extends AbstractController
         $user->setPassword($passwordHasher->hashPassword($user, $userCreateDTO->getPassword()));
         $this->entityManager->persist($user);
         $this->entityManager->flush();
-        $token = $jwtManager->create($user);
+        $token = $this->jwtManager->create($user);
         $serializedUser = $this->serializer->normalize($user, 'array');
 
         return new JsonResponse(['user' => $serializedUser, 'token' => $token], 201);
-    }
-
-    #[Route('/user/{id}', name: 'updateUser', methods: ['PUT'])]
-    public function modifyUser(Request $request, int $id)
-    {
-        $userModifyDTO =  $this->serializer->deserialize($request->getContent(), UserModifyDTO::class, 'json');
-        $errors = $this->validator->validate($userModifyDTO);
-        if (count($errors) > 0) {
-            throw new Exception((string) $errors);
-        }
-        $user = $entityManager->getRepository(User::class)->find($id);
-        dd($user);
-
     }
 }

@@ -54,18 +54,4 @@ class UserCreateDTO extends AbstractDTO
 
         return $this;
     }
-
-    // public function fill(User $user)
-    // {
-    //     $user->setEmail($this->getEmail());
-    //     $user->setUsername($this->getUsername());
-    //     $user->setPassword($this->getPassword());
-    // }
-
-    // public function extract(User $user)
-    // {
-    //     $this->setEmail($user->getEmail());
-    //     $this->setUsername($user->getUsername());
-    //     $this->setPassword($user->getPassword());
-    // }
 }
