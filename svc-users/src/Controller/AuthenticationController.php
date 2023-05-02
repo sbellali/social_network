@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface as Passw
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class AuthentificationController extends AbstractController
+class AuthenticationController extends AbstractController
 {
     function __construct(
         private EntityManagerInterface $entityManager,
