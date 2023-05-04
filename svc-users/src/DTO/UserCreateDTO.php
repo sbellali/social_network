@@ -3,10 +3,11 @@
 namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\User;
+use App\Enum\GenderEnum;
 
 class UserCreateDTO extends AbstractDTO
 {
+
     #[Assert\NotBlank]
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
@@ -14,10 +15,15 @@ class UserCreateDTO extends AbstractDTO
     private ?string $email = null;
 
     #[Assert\NotBlank]
-    private ?string $username = null;
+    private ?string $firstName = null;
+
+    #[Assert\NotBlank]
+    private ?string $lastName = null;
 
     #[Assert\NotBlank]
     private ?string $password = null;
+
+    private ?GenderEnum $gender = null;
 
     public function getEmail(): ?string
     {
@@ -27,19 +33,27 @@ class UserCreateDTO extends AbstractDTO
     public function setEmail(string $email): self
     {
         $this->email = $email;
+        return $this;
+    }
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
 
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getLastName(): ?string
     {
-        return $this->username;
+        return $this->lastName;
     }
 
-    public function setUsername(string $username): self
+    public function setLastname(string $lastName): self
     {
-        $this->username = $username;
-
+        $this->lastName = $lastName;
         return $this;
     }
 
@@ -51,7 +65,17 @@ class UserCreateDTO extends AbstractDTO
     public function setPassword(string $password): self
     {
         $this->password = $password;
+        return $this;
+    }
 
+    public function getGender(): GenderEnum
+    {
+        return $this->gender;
+    }
+
+    public function setGender(GenderEnum $gender): self
+    {
+        $this->gender = $gender;
         return $this;
     }
 }

@@ -24,7 +24,8 @@ class JWTCreatedListener
             $event->getData(),
             [
                 'id' => $this->user->getId(),
-                'username' => $this->user->getUsername(),
+                'firstName' => $this->user->getFirstName(),
+                'lastName' => $this->user->getLastName(),
                 'email' => $this->user->getEmail()
             ]
         );
@@ -32,4 +33,3 @@ class JWTCreatedListener
         $event->setData($payload);
     }
 }
-

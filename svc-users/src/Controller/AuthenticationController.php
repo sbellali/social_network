@@ -44,4 +44,24 @@ class AuthenticationController extends AbstractController
 
         return new JsonResponse(['user' => $serializedUser, 'token' => $token], 201);
     }
+
+    #[Route('/api/health', name: 'health', methods: ['POSt'])]
+    public function test(Request $request): JsonResponse
+    {
+        $user =  $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        $user->setPassword('password');
+        $user->setRoles(array('ROLE_USER'));
+        // $user->setBirthday(new \DateTime('1992-08-06'));
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0) {
+            throw new Exception((string) $errors);
+        }
+        // dd($user);
+        // $this->entityManager->persist($user);
+        // $this->entityManager->flush();
+
+        // $user = $this->entityManager->getRepository(User::class)->find(2);
+        dd($user);
+        return new JsonResponse([]);
+    }
 }

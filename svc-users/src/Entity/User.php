@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use DateTime;
 use App\Repository\UserRepository;
+use App\Enum\GenderEnum;
+use App\Validator as CustomAssert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,6 +15,9 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User extends AbstractEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    const DEFAULT_PROFILE_PICTURE = "https://hostname/images/profile";
+    const DEFAULT_COVER_PICTURE = "https://hostname/images/profile";
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,11 +30,8 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     )]
     private ?string $email = null;
 
-    #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank]
-    private ?string $username = null;
-
-    #[ORM\Column]
+    #[ORM\Column(type: 'array')]
+    #[CustomAssert\ContainsRoles]
     private array $roles = [];
 
     /**
@@ -38,6 +41,49 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     #[Assert\NotBlank]
     #[Ignore]
     private ?string $password = null;
+
+    #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
+    private ?string $firstName = '';
+
+    #[ORM\Column(length: 180)]
+    #[Assert\NotBlank]
+    private ?string $lastName = '';
+
+    #[ORM\Column(type: "string", enumType: GenderEnum::class)]
+    private ?GenderEnum $gender = null;
+
+    #[ORM\Column(type: "datetime")]
+    private ?DateTime $birthday = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\Url]
+    private ?string $profilePicture = self::DEFAULT_PROFILE_PICTURE;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\Url]
+    private ?string $coverPhoto = self::DEFAULT_COVER_PICTURE;
+
+    #[ORM\Column(type: "text")]
+    #[Assert\Length(max: 600)]
+    private ?string $biography = '';
+
+
+    // #[ORM\OneToMany(targetEntity: "WorkExperience", mappedBy: "user")]
+    // private $workExperience;
+
+
+    // #[ORM\OneToMany(targetEntity: "Education", mappedBy: "user")]
+    // private $education;
+
+
+    // #[ORM\OneToMany(targetEntity: "SocialConnection", mappedBy: "user")]
+    // private $socialConnections;
+
+
+    // #[ORM\OneToMany(targetEntity: "PrivacySetting", mappedBy: "user")]
+    // private $privacySettings;
+
 
     public function getId(): ?int
     {
@@ -56,30 +102,6 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         return $this;
     }
 
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    #[Ignore]
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->email;
-    }
-
     /**
      * @see UserInterface
      */
@@ -94,7 +116,7 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
 
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = array_unique($roles);
 
         return $this;
     }
@@ -112,6 +134,96 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         $this->password = $password;
 
         return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastname(string $lastName): self
+    {
+        $this->lastName = $lastName;
+        return $this;
+    }
+
+    public function getGender(): GenderEnum
+    {
+        return $this->gender;
+    }
+
+    public function setGender(GenderEnum $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
+    }
+
+    public function getBirthday(): DateTime
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(DateTime $birthday): self
+    {
+        $this->birthday = $birthday;
+        return $this;
+    }
+
+    public function getProfilePicture(): string
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(string $profilePicture): self
+    {
+        $this->profilePicture = $profilePicture;
+        return $this;
+    }
+
+    public function getCoverPhoto(): string
+    {
+        return $this->coverPhoto;
+    }
+
+    public function setCoverPhoto(string $coverPhoto): self
+    {
+        $this->coverPhoto = $coverPhoto;
+        return $this;
+    }
+
+    public function getBiography(): string
+    {
+        return $this->biography;
+    }
+
+    public function setBiography(string $biography): self
+    {
+        $this->biography = $biography;
+        return $this;
+    }
+
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    #[Ignore]
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 
     /**
