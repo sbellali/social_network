@@ -72,35 +72,30 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
 
 
     #[ORM\OneToMany(targetEntity: "WorkExperience", mappedBy: "user")]
-    private $workExperience;
+    private $workExperiences;
 
 
     #[ORM\OneToMany(targetEntity: "Education", mappedBy: "user")]
-    private $education;
+    private $educations;
 
 
-    // #[ORM\OneToMany(targetEntity: "SocialConnection", mappedBy: "user")]
-    // private $socialConnections;
-
-
-    #[ORM\OneToMany(targetEntity: "PrivacySettings", mappedBy: "user")]
+    #[ORM\OneToMany(targetEntity: "PrivacySetting", mappedBy: "user")]
     private $privacySettings;
 
-    #[ORM\Column(type: "array")]
-    private array $followerRelationships;
+    // #[ORM\Column(type: "array")]
+    // private array $followerRelationships;
 
-    #[ORM\Column(type: "array")]
-    private array $followingRelationships;
+    // #[ORM\Column(type: "array")]
+    // private array $followingRelationships;
 
 
     public function __construct()
     {
-        $this->workExperience = new ArrayCollection();
-        $this->education = new ArrayCollection();
-        // $this->socialConnections = new ArrayCollection();
+        $this->workExperiences = new ArrayCollection();
+        $this->educations = new ArrayCollection();
         $this->privacySettings = new ArrayCollection();
-        $this->followerRelationships = [];
-        $this->followingRelationships = [];
+        // $this->followerRelationships = [];
+        // $this->followingRelationships = [];
     }
 
 
@@ -252,58 +247,85 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
         // $this->plainPassword = null;
     }
 
-    public function getWorkExperience(): Collection
+    /**
+     * @return Collection|WorkExperience[]
+     */
+    public function getWorkExperiences(): Collection
     {
-        return $this->workExperience;
+        return $this->workExperiences;
     }
 
-    public function setWorkExperience(Collection $workExperience): self
+    public function addWorkExperience(WorkExperience $workExperience): self
     {
-        $this->workExperience = $workExperience;
+        if (!$this->workExperiences->contains($workExperience)) {
+            $this->workExperiences[] = $workExperience;
+        }
+
         return $this;
     }
 
-    public function getEducation(): Collection
+    public function removeWorkExperience(WorkExperience $workExperience): self
     {
-        return $this->education;
-    }
+        $this->workExperiences->removeElement($workExperience);
 
-    public function setEducation(Collection $education): self
-    {
-        $this->education = $education;
         return $this;
     }
 
+    /**
+     * @return Collection|Education[]
+     */
+    public function getEducations(): Collection
+    {
+        return $this->educations;
+    }
+
+    public function addEducation(Education $education): self
+    {
+        if (!$this->educations->contains($education)) {
+            $this->educations[] = $education;
+        }
+
+        return $this;
+    }
+
+    public function removeEducation(Education $education): self
+    {
+        $this->educations->removeElement($education);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PrivacySetting[]
+     */
     public function getPrivacySettings(): Collection
     {
         return $this->privacySettings;
     }
 
-    public function setPrivacySettings(Collection $privacySettings): self
+    public function addPrivacySetting(PrivacySetting $privacySetting): self
     {
-        $this->privacySettings = $privacySettings;
+        if (!$this->privacySettings->contains($privacySetting)) {
+            $this->privacySettings[] = $privacySetting;
+        }
+
         return $this;
     }
 
-    public function getFollowerRelationships(): array
+    public function removePrivacySetting(PrivacySetting $privacySetting): self
     {
-        return $this->followerRelationships;
-    }
+        $this->privacySettings->removeElement($privacySetting);
 
-    public function setFollowerRelationships(array $followerRelationships): self
-    {
-        $this->followerRelationships = $followerRelationships;
         return $this;
     }
+    // public function getFollowingRelationships(): array
+    // {
+    //     return $this->followingRelationships;
+    // }
 
-    public function getFollowingRelationships(): array
-    {
-        return $this->followingRelationships;
-    }
-
-    public function setFollowingRelationships(array $followingRelationships): self
-    {
-        $this->followingRelationships = $followingRelationships;
-        return $this;
-    }
+    // public function setFollowingRelationships(array $followingRelationships): self
+    // {
+    //     $this->followingRelationships = $followingRelationships;
+    //     return $this;
+    // }
 }

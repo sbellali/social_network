@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -18,16 +19,18 @@ class UserController extends AbstractController
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
-        private JWTManager $jwtManager
+        private JWTManager $jwtManager,
+        private TokenStorageInterface $tokenStorageInterface
     ) {
     }
 
     #[Route('/api/user/{id}', name: 'user-update', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $user =  $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        // $bodyContent = $request->getContent();
 
-        dd($user);
+        // $user =  $this->serializer->deserialize($request->getContent(), User::class, 'json');
+        dd($this->jwtManager->decode($this->tokenStorageInterface->getToken()));
         return new JsonResponse(['action' => "je suis le update"]);
     }
 

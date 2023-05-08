@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class SocialConnection
+class PrivacySetting
 {
 
     #[ORM\Id]
@@ -13,15 +13,15 @@ class SocialConnection
     #[ORM\Column]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "socialConnections")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "privacySettings")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
     private User $user;
 
     #[ORM\Column(length: 255)]
-    private string $socialNetworkName;
+    private string $settingName;
 
     #[ORM\Column(length: 255)]
-    private string $username;
+    private string $value;
 
     public function getId(): int
     {
@@ -47,26 +47,26 @@ class SocialConnection
         return $this;
     }
 
-    public function getSocialNetworkName(): string
+    public function getSettingName(): string
     {
-        return $this->socialNetworkName;
+        return $this->settingName;
     }
 
-    public function setSocialNetworkName(string $socialNetworkName): self
+    public function setSettingName(string $settingName): self
     {
-        $this->socialNetworkName = $socialNetworkName;
+        $this->settingName = $settingName;
 
         return $this;
     }
 
-    public function getUsername(): string
+    public function getValue(): string
     {
-        return $this->username;
+        return $this->value;
     }
 
-    public function setUsername(string $username): self
+    public function setValue(string $value): self
     {
-        $this->username = $username;
+        $this->value = $value;
 
         return $this;
     }

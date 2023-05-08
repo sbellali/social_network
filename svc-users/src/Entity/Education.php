@@ -13,8 +13,8 @@ class Education
     #[ORM\Column]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "education")]
-    // #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "educations")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
     private User $user;
 
     #[ORM\Column(length: 255)]

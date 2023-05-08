@@ -15,7 +15,7 @@ class WorkExperience
     private int $id;
 
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "workExperience")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "workExperiences")]
     #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
     private User $user;
 
