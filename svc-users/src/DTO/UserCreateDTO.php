@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Enum\GenderEnum;
+use DateTime;
 
 class UserCreateDTO extends AbstractDTO
 {
@@ -24,6 +25,8 @@ class UserCreateDTO extends AbstractDTO
     private ?string $password = null;
 
     private ?GenderEnum $gender = null;
+
+    private ?DateTime $birthday = null; //TODO check majority
 
     public function getEmail(): ?string
     {
@@ -76,6 +79,17 @@ class UserCreateDTO extends AbstractDTO
     public function setGender(GenderEnum $gender): self
     {
         $this->gender = $gender;
+        return $this;
+    }
+
+    public function getBirthday(): DateTime
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(DateTime $birthday): self
+    {
+        $this->birthday = $birthday;
         return $this;
     }
 }

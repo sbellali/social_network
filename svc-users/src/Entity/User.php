@@ -6,6 +6,8 @@ use DateTime;
 use App\Repository\UserRepository;
 use App\Enum\GenderEnum;
 use App\Validator as CustomAssert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -69,20 +71,37 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     private ?string $biography = '';
 
 
-    // #[ORM\OneToMany(targetEntity: "WorkExperience", mappedBy: "user")]
-    // private $workExperience;
+    #[ORM\OneToMany(targetEntity: "WorkExperience", mappedBy: "user")]
+    private $workExperience;
 
 
-    // #[ORM\OneToMany(targetEntity: "Education", mappedBy: "user")]
-    // private $education;
+    #[ORM\OneToMany(targetEntity: "Education", mappedBy: "user")]
+    private $education;
 
 
     // #[ORM\OneToMany(targetEntity: "SocialConnection", mappedBy: "user")]
     // private $socialConnections;
 
 
-    // #[ORM\OneToMany(targetEntity: "PrivacySetting", mappedBy: "user")]
-    // private $privacySettings;
+    #[ORM\OneToMany(targetEntity: "PrivacySettings", mappedBy: "user")]
+    private $privacySettings;
+
+    #[ORM\Column(type: "array")]
+    private array $followerRelationships;
+
+    #[ORM\Column(type: "array")]
+    private array $followingRelationships;
+
+
+    public function __construct()
+    {
+        $this->workExperience = new ArrayCollection();
+        $this->education = new ArrayCollection();
+        // $this->socialConnections = new ArrayCollection();
+        $this->privacySettings = new ArrayCollection();
+        $this->followerRelationships = [];
+        $this->followingRelationships = [];
+    }
 
 
     public function getId(): ?int
@@ -132,7 +151,6 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
@@ -166,7 +184,6 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     public function setGender(GenderEnum $gender): self
     {
         $this->gender = $gender;
-
         return $this;
     }
 
@@ -233,5 +250,60 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getWorkExperience(): Collection
+    {
+        return $this->workExperience;
+    }
+
+    public function setWorkExperience(Collection $workExperience): self
+    {
+        $this->workExperience = $workExperience;
+        return $this;
+    }
+
+    public function getEducation(): Collection
+    {
+        return $this->education;
+    }
+
+    public function setEducation(Collection $education): self
+    {
+        $this->education = $education;
+        return $this;
+    }
+
+    public function getPrivacySettings(): Collection
+    {
+        return $this->privacySettings;
+    }
+
+    public function setPrivacySettings(Collection $privacySettings): self
+    {
+        $this->privacySettings = $privacySettings;
+        return $this;
+    }
+
+    public function getFollowerRelationships(): array
+    {
+        return $this->followerRelationships;
+    }
+
+    public function setFollowerRelationships(array $followerRelationships): self
+    {
+        $this->followerRelationships = $followerRelationships;
+        return $this;
+    }
+
+    public function getFollowingRelationships(): array
+    {
+        return $this->followingRelationships;
+    }
+
+    public function setFollowingRelationships(array $followingRelationships): self
+    {
+        $this->followingRelationships = $followingRelationships;
+        return $this;
     }
 }
