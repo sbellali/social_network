@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\HttpMessages;
+use App\Enum\RoleEnum;
+use App\Service\DTOManager;
+use App\Service\UserManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface as JWTManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -20,31 +24,41 @@ class UserController extends AbstractController
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private JWTManager $jwtManager,
-        private TokenStorageInterface $tokenStorageInterface
+        private UserManager $userManager,
+        private DTOManager $dTOManager
     ) {
     }
 
     #[Route('/api/user/{id}', name: 'user-update', methods: ['PUT'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        // $bodyContent = $request->getContent();
+        if (!$this->userManager->hasRight($id)) {
+            return new JsonResponse(['message' => HttpMessages::HTTP_UNAUTHORIZED], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+        $bodyContent = $request->getContent();
+        $user = $this->userManager->updateCurrentUser($bodyContent);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
 
-        // $user =  $this->serializer->deserialize($request->getContent(), User::class, 'json');
-        dd($this->jwtManager->decode($this->tokenStorageInterface->getToken()));
         return new JsonResponse(['action' => "je suis le update"]);
     }
 
     #[Route('/api/user/{id}', name: 'user-delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
+        if (!$this->userManager->hasRight($id)) {
+            return new JsonResponse(['message' => HttpMessages::HTTP_UNAUTHORIZED], JsonResponse::HTTP_UNAUTHORIZED);
+        }
+
         return new JsonResponse(['action' => "je suis le delete"]);
     }
 
     #[Route('/api/user/{id}', name: 'user-get', methods: ['GET'])]
     public function get(int $id): JsonResponse
     {
-        $user = $this->entityManager->getRepository(User::class)->find($id);
-        dd($user->getWorkExperience());
+        if (!$this->userManager->hasRight($id)) {
+            return new JsonResponse(['message' => HttpMessages::HTTP_UNAUTHORIZED], JsonResponse::HTTP_UNAUTHORIZED);
+        }
         return new JsonResponse(['action' => "je suis le get"]);
     }
 }

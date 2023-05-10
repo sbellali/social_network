@@ -56,6 +56,7 @@ class User extends AbstractEntity implements UserInterface, PasswordAuthenticate
     private ?GenderEnum $gender = null;
 
     #[ORM\Column(type: "datetime")]
+    #[CustomAssert\IsAdult]
     private ?DateTime $birthday = null;
 
     #[ORM\Column(length: 255)]
